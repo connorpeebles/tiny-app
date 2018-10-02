@@ -39,8 +39,13 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  let templateVars = {shortURL: req.params.id, longURL: urlDatabase[req.params.id]};
-  res.render("urls_show", templateVars);
+  let shortURL = req.params.id;
+  if (shortURL in urlDatabase) {
+    let templateVars = {shortURL: shortURL, longURL: urlDatabase[shortURL]};
+    res.render("urls_show", templateVars);
+  } else {
+    res.send('<html><body>Error: Shortened URL does not exist. See current <a href="/urls">list of shortened URLS</a> or <a href="/urls/new">add a new URL</a>.</body></html>')
+  }
 });
 
 app.get("/urls.json", (req, res) => {
@@ -53,9 +58,8 @@ app.get("/u/:shortURL", (req, res) => {
     let longURL = urlDatabase[shortURL];
     res.redirect(longURL);
   } else {
-    res.send('<html><body>Error: Cannot redirect. See <a href="/urls">list of shortened URLS</a>.</body></html>')
+    res.send('<html><body>Error: Shortened URL does not exist. See current <a href="/urls">list of shortened URLS</a> or <a href="/urls/new">add a new URL</a>.</body></html>')
   }
-
 });
 
 app.listen(PORT, () => {
