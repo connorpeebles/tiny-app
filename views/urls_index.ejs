@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>TinyApp</title>
+</head>
+
+<body>
+  <table cellpadding="5">
+    <tr>
+      <th>Original URL</th>
+      <th>Shortened URL</th>
+    </tr>
+    <% for (var url in urls) { %>
+    <tr>
+      <td> <%= urls[url] %> </td>
+      <td> http://localhost:8080/<%= url %> </td>
+    </tr>
+    <% }; %>
+  </table>
+  <p><a href="#">Add a new URL</a></p>
+</body>
+
+</html>
