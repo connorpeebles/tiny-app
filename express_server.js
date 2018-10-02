@@ -48,8 +48,14 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
-  res.redirect(longURL);
+  let shortURL = req.params.shortURL;
+  if (shortURL in urlDatabase) {
+    let longURL = urlDatabase[shortURL];
+    res.redirect(longURL);
+  } else {
+    res.send('<html><body>Error: Cannot redirect. See <a href="/urls">list of shortened URLS</a>.</body></html>')
+  }
+
 });
 
 app.listen(PORT, () => {
