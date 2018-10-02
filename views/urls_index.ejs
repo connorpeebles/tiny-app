@@ -16,6 +16,11 @@
     <tr>
       <td> <%= urls[url] %> </td>
       <td> http://localhost:8080/<%= url %> </td>
+      <td>
+        <form method="POST" action="urls/:id/delete">
+          <input type="submit" value="Delete">
+        </form>
+      </td>
     </tr>
     <% }; %>
   </table>
