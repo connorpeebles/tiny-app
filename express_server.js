@@ -25,6 +25,11 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+app.post("/urls", (req, res) => {
+  console.log(req.body);  // debug statement to see POST parameters
+  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+});
+
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
@@ -41,3 +46,16 @@ app.get("/urls.json", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+function generateRandomString() {
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+  let output = "";
+
+  for (let i = 0; i < 6; i++) {
+    let randNum = Math.floor(Math.random() * 36);
+    let char = chars.substring(randNum, randNum + 1);
+    output += char;
+  }
+
+  return output;
+}
