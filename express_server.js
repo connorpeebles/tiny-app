@@ -115,7 +115,12 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  let templateVars = {user: req.cookies["user_id"]};
+  if (typeof templateVars.user === "undefined") {
+    res.redirect("/register");
+  } else {
+    res.render("urls_new", templateVars);
+  }
 });
 
 app.get("/urls/:id", (req, res) => {
