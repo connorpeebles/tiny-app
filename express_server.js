@@ -47,7 +47,8 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  res.render("register");
+  let templateVars = {action: "/register", button: "Register"};
+  res.render("register", templateVars);
 })
 
 app.post("/register", (req, res) => {
@@ -65,6 +66,11 @@ app.post("/register", (req, res) => {
     res.redirect("/urls");
   }
 });
+
+app.get("/login", (req, res) => {
+  let templateVars = {action: "/login", button: "Login"};
+  res.render("login", templateVars);
+})
 
 app.post("/login", (req, res) => {
   let username = req.body.username;

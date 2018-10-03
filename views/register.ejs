@@ -9,27 +9,8 @@
   <h1 style="margin: 50px;">TinyApp URL Shortener</h1>
   <h2 style="margin-left: 50px;">Create an account</h2>
   <p style="margin-left: 50px; margin-right: 50px;">Register below to gain access to shortened URLs to the most popular websites and create your own short URLs!</p>
-  <form action="/register" method="POST" style="margin-left:50px; margin-top:50px;">
-    <table>
-      <tr>
-        <td>
-          <label for="email">Email: </label>
-        </td>
-        <td>
-          <input id="email" type="email" name="email" placeholder="email" style="width: 300px">
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <label for="password">Password: </label>
-        </td>
-        <td>
-          <input id="password" type="password" name="password" placeholder="password" style="width: 300px">
-        </td>
-        <td>
-          <input type="submit" value="Register">
-        </td>
-      </tr>
-    </table>
-  </form>
+  <% include partials/_email-pass %>
+  <br>
+  <a style="margin-left: 50px;" href="/login">Already have an account?</a>
 </body>
+</html>
