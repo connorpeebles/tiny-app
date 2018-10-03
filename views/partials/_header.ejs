@@ -12,10 +12,6 @@
     </tr>
   </table>
   <% } else { %>
-  <form action="/login" method="POST" style="margin-left:50px; margin-top:50px;">
-    <label for="username">Login: </label>
-    <input id="username" type="text" name="username" placeholder="username" style="width: 150px">
-    <input type="submit" value="Submit">
-  </form>
+  <a style="margin-left:50px; margin-top:50px;" href="/register"><b>Register</b></a> &nbsp;|&nbsp; <a href="/login"><b>Login</b></a>
   <% } %>
 </body>
