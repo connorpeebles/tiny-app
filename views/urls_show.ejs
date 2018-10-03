@@ -7,7 +7,7 @@
 </head>
 
 <body>
-  <table cellpadding="5">
+  <table cellpadding="5" style="margin:50px;">
     <tr>
       <th>Original URL</th>
       <th>Shortened URL</th>
@@ -17,6 +17,11 @@
       <td> http://localhost:8080/<%= shortURL %> </td>
     </tr>
   </table>
+  <form action=<%= "/urls/" + shortURL %> method="POST" style="margin:50px;">
+    <label for="longURL">Edit the original URL:</label>
+    <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
+    <input type="submit" value="Submit">
+  </form>
 </body>
 
 </html>
