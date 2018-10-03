@@ -92,8 +92,15 @@ app.post("/logout", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = {urls: urlDatabase, user: req.cookies["user_id"]};
-  res.render("urls_index", templateVars);
+  let user = req.cookies["user_id"];
+  if (typeof user === "undefined") {
+    res.status(403).send("<html><body><p>Error: Please register or login to access your list of shortened URLs.</p><p><a href='/register'>Register</a> &nbsp;|&nbsp; <a href='/login'>Login</a></p></body></html>")
+  } else {
+    let filteredDatabase = urlsForUser(user.id);
+    console.log(filteredDatabase);
+    let templateVars = {urls: filteredDatabase, user: req.cookies["user_id"]};
+    res.render("urls_index", templateVars);
+  }
 });
 
 app.post("/urls", (req, res) => {
@@ -186,4 +193,14 @@ function getIDfromEmail(email) {
     }
   }
   return false;
+}
+
+function urlsForUser(id) {
+  var filteredDatabase = {};
+  for (var url in urlDatabase) {
+    if (urlDatabase[url]["userID"] === id) {
+      filteredDatabase[url] = urlDatabase[url];
+    }
+  }
+  return filteredDatabase;
 }
