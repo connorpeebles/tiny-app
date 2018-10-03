@@ -4,10 +4,22 @@
 
 <body>
   <h1 style="margin-left:50px; margin-top:50px;">TinyApp URL Shortener</h1>
-  <h3 style="margin-left:50px; margin-top:50px;">Welcome, <%=username%>!</h3>
-  <form action="/login" method="POST" style="margin-left:50px;">
-      <label for="username">Login: </label>
-      <input id="username" type="text" name="username" placeholder="username" style="width: 150px">
-      <input type="submit" value="Submit">
-    </form>
+  <% if (username) { %>
+  <table cellpadding="5" style="margin-left:50px; margin-top:40px;">
+    <tr>
+      <td><b>Welcome, <%=username%>! </b></td>
+      <td>
+        <form action="/logout" method="POST">
+          <input id="logout" type="submit" value="Logout">
+        </form>
+      </td>
+    </tr>
+  </table>
+  <% } else { %>
+  <form action="/login" method="POST" style="margin-left:50px; margin-top:50px;">
+    <label for="username">Login: </label>
+    <input id="username" type="text" name="username" placeholder="username" style="width: 150px">
+    <input type="submit" value="Submit">
+  </form>
+  <% } %>
 </body>
