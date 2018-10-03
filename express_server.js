@@ -109,16 +109,21 @@ app.post("/urls", (req, res) => {
 app.post("/urls/:id/", (req, res) => {
   let shortURL = req.params.id;
   let longURL = req.body.longURL;
-  urlDatabase[shortURL] = "http://" + longURL;
+  urlDatabase[shortURL]["longURL"] = "http://" + longURL;
   res.redirect("/urls");
 });
 
 app.post("/urls/:id/delete", (req, res) => {
+  let user = req.cookies["user_id"];
   let shortURL = req.params.id;
-  console.log("shortURL: ", shortURL)
-  delete urlDatabase[shortURL];
-  console.log("urlDatabase: ", urlDatabase);
-  res.redirect("/urls");
+  if (user.id !== urlDatabase[shortURL]["userID"]) {
+    res.status(403).send("<html><body>Error: You are not authorized to delete this URL.</body></html");
+  } else if (shortURL in urlDatabase) {
+    delete urlDatabase[shortURL];
+    res.redirect("/urls");
+  } else {
+    res.status(404).send('<html><body>Error: Shortened URL does not exist. See current <a href="/urls">list of shortened URLS</a> or <a href="/urls/new">add a new URL</a>.</body></html>')
+  }
 });
 
 app.get("/urls/new", (req, res) => {
@@ -131,12 +136,15 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
+  let user = req.cookies["user_id"];
   let shortURL = req.params.id;
-  if (shortURL in urlDatabase) {
+  if (user.id !== urlDatabase[shortURL]["userID"]) {
+    res.status(403).send("<html><body>Error: You are not authorized to edit this URL.</body></html");
+  } else if (shortURL in urlDatabase) {
     let templateVars = {shortURL: shortURL, longURL: urlDatabase[shortURL]["longURL"], user: req.cookies["user_id"]};
     res.render("urls_show", templateVars);
   } else {
-    res.send('<html><body>Error: Shortened URL does not exist. See current <a href="/urls">list of shortened URLS</a> or <a href="/urls/new">add a new URL</a>.</body></html>')
+    res.status(404).send('<html><body>Error: Shortened URL does not exist. See current <a href="/urls">list of shortened URLS</a> or <a href="/urls/new">add a new URL</a>.</body></html>')
   }
 });
 
