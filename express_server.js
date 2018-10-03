@@ -61,24 +61,24 @@ app.post("/register", (req, res) => {
   } else {
     users[id] = {id: id, email: email, password: password};
     console.log(users);
-    res.cookie("user_id", id);
+    res.cookie("user_id", users[id]);
     res.redirect("/urls");
   }
 });
 
 app.post("/login", (req, res) => {
   let username = req.body.username;
-  res.cookie("username", username);
+  res.cookie("user_id", users[id]);
   res.redirect("/urls");
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie("user_id");
   res.redirect("/urls");
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = {urls: urlDatabase, username: req.cookies["username"]};
+  let templateVars = {urls: urlDatabase, user: req.cookies["user_id"]};
   res.render("urls_index", templateVars);
 });
 
@@ -113,7 +113,7 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   let shortURL = req.params.id;
   if (shortURL in urlDatabase) {
-    let templateVars = {shortURL: shortURL, longURL: urlDatabase[shortURL], username: req.cookies["username"]};
+    let templateVars = {shortURL: shortURL, longURL: urlDatabase[shortURL], user: req.cookies["user_id"]};
     res.render("urls_show", templateVars);
   } else {
     res.send('<html><body>Error: Shortened URL does not exist. See current <a href="/urls">list of shortened URLS</a> or <a href="/urls/new">add a new URL</a>.</body></html>')

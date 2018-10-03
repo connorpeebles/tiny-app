@@ -4,10 +4,10 @@
 
 <body>
   <h1 style="margin-left:50px; margin-top:50px;">TinyApp URL Shortener</h1>
-  <% if (username) { %>
+  <% if (user) { %>
   <table cellpadding="5" style="margin-left:50px; margin-top:40px;">
     <tr>
-      <td><b>Welcome, <%=username%>! </b></td>
+      <td><b>Welcome, <%=user.email%>! </b></td>
       <td>
         <form action="/logout" method="POST">
           <input id="logout" type="submit" value="Logout">
