@@ -24,8 +24,8 @@ app.get("/hello", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  let username = req.params.username;
-  res.cookie(username, {});
+  let username = req.body.username;
+  res.cookie(username, {username: username});
   res.redirect("/urls");
 })
 
