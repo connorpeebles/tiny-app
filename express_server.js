@@ -38,14 +38,6 @@ const users = {
   }
 }
 
-app.get("/", (req, res) => {
-  res.send("Hello!");
-});
-
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
-});
-
 app.get("/register", (req, res) => {
   let templateVars = {action: "/register", button: "Register"};
   res.render("register", templateVars);
@@ -55,10 +47,11 @@ app.post("/register", (req, res) => {
   let id = generateRandomString();
   let email = req.body.email;
   let password = req.body.password;
+
   if (email === "" || password === "") {
     res.status(400).send("<html><body><p>Error: The email and password fields cannot be empty.</p><p><a href='/register'>Register</a></p></body></html>")
-  } else if (checkEmailExists(email)) {
-    res.status(400).send("<html><body><p>Error: The email entered is already registered.</p><p><a href='/register'>Register</a> &nbsp;<a href='/login'>Login</a></p></body></html>")
+  } else if (getIDfromEmail(email)) {
+    res.status(400).send("<html><body><p>Error: The email entered is already registered.</p><p><a href='/register'>Register</a> &nbsp;|&nbsp; <a href='/login'>Login</a></p></body></html>")
   } else {
     users[id] = {id: id, email: email, password: password};
     console.log(users);
@@ -73,9 +66,18 @@ app.get("/login", (req, res) => {
 })
 
 app.post("/login", (req, res) => {
-  let username = req.body.username;
-  res.cookie("user_id", users[id]);
-  res.redirect("/urls");
+  let email = req.body.email;
+  let password = req.body.password;
+  let id = getIDfromEmail(email);
+
+  if (!id) {
+    res.status(403).send("<html><body><p>Error: The email entered has not been registered.</p><p><a href='/register'>Register</a> &nbsp;|&nbsp; <a href='/login'>Login</a></p></body></html>")
+  } else if (users[id]["password"] !== password) {
+    res.status(403).send("<html><body><p>Error: Incorrect password.</p><p><a href='/login'>Login</a></p></body></html>")
+  } else {
+    res.cookie("user_id", users[id]);
+    res.redirect("/urls");
+  }
 });
 
 app.post("/logout", (req, res) => {
@@ -157,10 +159,10 @@ function generateRandomString() {
   return output;
 }
 
-function checkEmailExists(email) {
+function getIDfromEmail(email) {
   for (var user in users) {
     if (users[user]["email"] === email) {
-      return true;
+      return user;
     }
   }
   return false;
