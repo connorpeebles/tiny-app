@@ -145,7 +145,9 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   let user = req.cookies["user_id"];
   let shortURL = req.params.id;
-  if (user.id !== urlDatabase[shortURL]["userID"]) {
+  if (typeof user === "undefined") {
+    res.status(403).send("<html><body><p>Error: Please register or login.</p><p><a href='/register'>Register</a> &nbsp;|&nbsp; <a href='/login'>Login</a></p></body></html>")
+  } else if (user.id !== urlDatabase[shortURL]["userID"]) {
     res.status(403).send("<html><body>Error: You are not authorized to edit this URL.</body></html");
   } else if (shortURL in urlDatabase) {
     let templateVars = {shortURL: shortURL, longURL: urlDatabase[shortURL]["longURL"], user: req.cookies["user_id"]};
@@ -162,7 +164,7 @@ app.get("/urls.json", (req, res) => {
 app.get("/u/:shortURL", (req, res) => {
   let shortURL = req.params.shortURL;
   if (shortURL in urlDatabase) {
-    let longURL = urlDatabase[shortURL];
+    let longURL = urlDatabase[shortURL]["longURL"];
     res.redirect(longURL);
   } else {
     res.send('<html><body>Error: Shortened URL does not exist. See current <a href="/urls">list of shortened URLS</a> or <a href="/urls/new">add a new URL</a>.</body></html>')
