@@ -11,8 +11,14 @@ app.use(cookieParser());
 var PORT = 8080; // default port 8080
 
 var urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": {
+    longURL: "http://www.lighthouselabs.ca",
+    userID: "connorlol"
+  },
+  "9sm5xK": {
+    longURL: "http://www.google.com",
+    userID: "connorlol"
+  }
 };
 
 const users = {
@@ -92,8 +98,9 @@ app.get("/urls", (req, res) => {
 
 app.post("/urls", (req, res) => {
   console.log(req.body);
+  let user = req.cookies["user_id"]
   let shortURL = generateRandomString();
-  urlDatabase[shortURL] = "http://" + req.body.longURL;
+  urlDatabase[shortURL] = {longURL: "http://" + req.body.longURL, userID: user.id};
   console.log(urlDatabase);
   let url = "/urls/" + shortURL
   res.redirect(url);
@@ -126,7 +133,7 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   let shortURL = req.params.id;
   if (shortURL in urlDatabase) {
-    let templateVars = {shortURL: shortURL, longURL: urlDatabase[shortURL], user: req.cookies["user_id"]};
+    let templateVars = {shortURL: shortURL, longURL: urlDatabase[shortURL]["longURL"], user: req.cookies["user_id"]};
     res.render("urls_show", templateVars);
   } else {
     res.send('<html><body>Error: Shortened URL does not exist. See current <a href="/urls">list of shortened URLS</a> or <a href="/urls/new">add a new URL</a>.</body></html>')
