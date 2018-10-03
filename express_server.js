@@ -54,10 +54,16 @@ app.post("/register", (req, res) => {
   let id = generateRandomString();
   let email = req.body.email;
   let password = req.body.password;
-  users[id] = {id: id, email: email, password: password};
-  console.log(users);
-  res.cookie("user_id", id);
-  res.redirect("/urls");
+  if (email === "" || password === "") {
+    res.status(400).send("<html><body><p>Error: The email and password fields cannot be empty.</p><p><a href='/register'>Register</a></p></body></html>")
+  } else if (checkEmailExists) {
+    res.status(400).send("<html><body><p>Error: The email entered is already registered.</p><p><a href='/register'>Register</a> &nbsp;<a href='/login'>Login</a></p></body></html>")
+  } else {
+    users[id] = {id: id, email: email, password: password};
+    console.log(users);
+    res.cookie("user_id", id);
+    res.redirect("/urls");
+  }
 });
 
 app.post("/login", (req, res) => {
@@ -143,4 +149,13 @@ function generateRandomString() {
   }
 
   return output;
+}
+
+function checkEmailExists(email) {
+  for (var user in users) {
+    if (user.email === email) {
+      return true;
+    }
+  }
+  return false;
 }
