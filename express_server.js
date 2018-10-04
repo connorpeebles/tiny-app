@@ -18,7 +18,7 @@ const bcrypt = require("bcrypt");
 const PORT = 8080;
 
 app.listen(PORT, () => {
-  console.log(`TinyApp listening on port ${PORT}!`);
+  console.log(`TinyApp listening on port ${PORT}!`); // eslint-disable-line no-console
 });
 
 // import url and user data and required functions from modules
@@ -74,7 +74,7 @@ app.get("/urls/:id", (req, res) => {
   if (typeof user === "undefined") {
     res.status(403).send("<html><body><p>Error: Please register or login.</p><p><a href='/register'>Register</a> &nbsp;|&nbsp; <a href='/login'>Login</a></p></body></html>");
   } else if (!(shortURL in urlDatabase)) {
-    res.status(404).send('<html><body>Error: Shortened URL does not exist. See current <a href="/urls">list of shortened URLS</a> or <a href="/urls/new">add a new URL</a>.</body></html>');
+    res.status(404).send("<html><body>Error: Shortened URL does not exist. See current <a href=\"/urls\">list of shortened URLS</a> or <a href=\"/urls/new\">add a new URL</a>.</body></html>");
   } else if (user.id !== urlDatabase[shortURL]["userID"]) {
     res.status(403).send("<html><body>Error: You are not authorized to edit this URL.</body></html>");
   } else {
@@ -92,7 +92,7 @@ app.get("/u/:id", (req, res) => {
     let longURL = urlDatabase[shortURL]["longURL"];
     res.redirect(longURL);
   } else {
-    res.status(404).send('<html><body>Error: Shortened URL does not exist.</body></html>');
+    res.status(404).send("<html><body>Error: Shortened URL does not exist.</body></html>");
   }
 });
 
@@ -123,7 +123,7 @@ app.post("/urls/:id/", (req, res) => {
   if (typeof user === "undefined") {
     res.status(403).send("<html><body>Error: Please register or login.</body></html>");
   } else if (!(shortURL in urlDatabase)) {
-    res.status(404).send('<html><body>Error: Shortened URL does not exist.</body></html>');
+    res.status(404).send("<html><body>Error: Shortened URL does not exist.</body></html>");
   } else if (user.id !== urlDatabase[shortURL]["userID"]) {
     res.status(403).send("<html><body>Error: You are not authorized to edit this URL.</body></html>");
   } else {
@@ -142,7 +142,7 @@ app.post("/urls/:id/delete", (req, res) => {
   if (typeof user === "undefined") {
     res.status(403).send("<html><body>Error: Please register or login.</body></html>");
   } else if (!(shortURL in urlDatabase)) {
-    res.status(404).send('<html><body>Error: Shortened URL does not exist.</body></html>');
+    res.status(404).send("<html><body>Error: Shortened URL does not exist.</body></html>");
   } else if (user.id !== urlDatabase[shortURL]["userID"]) {
     res.status(403).send("<html><body>Error: You are not authorized to delete this URL.</body></html>");
   } else {
