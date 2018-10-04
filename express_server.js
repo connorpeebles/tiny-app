@@ -15,10 +15,10 @@ app.use(cookieSession({
 const bcrypt = require("bcrypt");
 
 // default port 8080
-let PORT = 8080;
+const PORT = 8080;
 
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+  console.log(`TinyApp listening on port ${PORT}!`);
 });
 
 // import url and user data and required functions from modules
@@ -76,7 +76,7 @@ app.get("/urls/:id", (req, res) => {
   } else if (!(shortURL in urlDatabase)) {
     res.status(404).send('<html><body>Error: Shortened URL does not exist. See current <a href="/urls">list of shortened URLS</a> or <a href="/urls/new">add a new URL</a>.</body></html>');
   } else if (user.id !== urlDatabase[shortURL]["userID"]) {
-    res.status(403).send("<html><body>Error: You are not authorized to edit this URL.</body></html");
+    res.status(403).send("<html><body>Error: You are not authorized to edit this URL.</body></html>");
   } else {
     let templateVars = {shortURL: shortURL, longURL: urlDatabase[shortURL]["longURL"], user: user};
     res.render("urls_show", templateVars);
@@ -125,7 +125,7 @@ app.post("/urls/:id/", (req, res) => {
   } else if (!(shortURL in urlDatabase)) {
     res.status(404).send('<html><body>Error: Shortened URL does not exist.</body></html>');
   } else if (user.id !== urlDatabase[shortURL]["userID"]) {
-    res.status(403).send("<html><body>Error: You are not authorized to edit this URL.</body></html");
+    res.status(403).send("<html><body>Error: You are not authorized to edit this URL.</body></html>");
   } else {
     urlDatabase[shortURL]["longURL"] = "http://" + longURL;
     res.redirect("/urls");
@@ -144,7 +144,7 @@ app.post("/urls/:id/delete", (req, res) => {
   } else if (!(shortURL in urlDatabase)) {
     res.status(404).send('<html><body>Error: Shortened URL does not exist.</body></html>');
   } else if (user.id !== urlDatabase[shortURL]["userID"]) {
-    res.status(403).send("<html><body>Error: You are not authorized to delete this URL.</body></html");
+    res.status(403).send("<html><body>Error: You are not authorized to delete this URL.</body></html>");
   } else {
     delete urlDatabase[shortURL];
     res.redirect("/urls");
@@ -210,7 +210,6 @@ app.post("/register", (req, res) => {
     res.status(400).send("<html><body><p>Error: The email entered is already registered.</p><p><a href='/register'>Register</a> &nbsp;|&nbsp; <a href='/login'>Login</a></p></body></html>");
   } else {
     users[id] = {id: id, email: email, password: hashedPassword};
-    console.log(users);
     req.session.user_id = users[id];
     res.redirect("/urls");
   }

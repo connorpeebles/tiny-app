@@ -3,6 +3,7 @@ const urlDatabase = require("./data_urls");
 
 module.exports = {
 
+  // generates random 6 character string
   generateRandomString: function() {
     const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
     let output = "";
@@ -16,6 +17,8 @@ module.exports = {
     return output;
   },
 
+  // if the paramater email exists to a current user, returns user
+  // else returns false
   getIDfromEmail: function(email) {
     for (let user in users) {
       if (users[user]["email"] === email) {
@@ -26,6 +29,7 @@ module.exports = {
     return false;
   },
 
+  // returns all urls in the urlDatabase that belong to the user with paramater id
   urlsForUser: function(id) {
     let filteredDatabase = {};
 
