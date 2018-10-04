@@ -28,6 +28,7 @@ module.exports = {
 
   urlsForUser: function(id) {
     let filteredDatabase = {};
+
     for (let url in urlDatabase) {
       if (urlDatabase[url]["userID"] === id) {
         filteredDatabase[url] = urlDatabase[url];

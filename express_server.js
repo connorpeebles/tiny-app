@@ -24,12 +24,13 @@ app.listen(PORT, () => {
 // import url and user data and required functions from modules
 const urlDatabase = require("./data_urls");
 const users = require("./data_users");
-const func = require("./functions")
+const func = require("./functions");
 
 // GET /
 // redirects to /login if user is not logged in, else /urls
 app.get("/", (req, res) => {
   let user = req.session.user_id;
+
   if (typeof user === "undefined") {
     res.redirect("/login");
   } else {
@@ -41,8 +42,9 @@ app.get("/", (req, res) => {
 // renders list of urls for a user if user logged in, else error message
 app.get("/urls", (req, res) => {
   let user = req.session.user_id;
+
   if (typeof user === "undefined") {
-    res.status(403).send("<html><body><p>Error: Please register or login to access your list of shortened URLs.</p><p><a href='/register'>Register</a> &nbsp;|&nbsp; <a href='/login'>Login</a></p></body></html>")
+    res.status(403).send("<html><body><p>Error: Please register or login to access your list of shortened URLs.</p><p><a href='/register'>Register</a> &nbsp;|&nbsp; <a href='/login'>Login</a></p></body></html>");
   } else {
     let filteredDatabase = func.urlsForUser(user.id);
     let templateVars = {urls: filteredDatabase, user: user};
@@ -54,6 +56,7 @@ app.get("/urls", (req, res) => {
 // renders form to add new short URL if user logged in, else redirects to login
 app.get("/urls/new", (req, res) => {
   let user = req.session.user_id;
+
   if (typeof user === "undefined") {
     res.redirect("/login");
   } else {
@@ -67,10 +70,11 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   let user = req.session.user_id;
   let shortURL = req.params.id;
+
   if (typeof user === "undefined") {
-    res.status(403).send("<html><body><p>Error: Please register or login.</p><p><a href='/register'>Register</a> &nbsp;|&nbsp; <a href='/login'>Login</a></p></body></html>")
+    res.status(403).send("<html><body><p>Error: Please register or login.</p><p><a href='/register'>Register</a> &nbsp;|&nbsp; <a href='/login'>Login</a></p></body></html>");
   } else if (!(shortURL in urlDatabase)) {
-    res.status(404).send('<html><body>Error: Shortened URL does not exist. See current <a href="/urls">list of shortened URLS</a> or <a href="/urls/new">add a new URL</a>.</body></html>')
+    res.status(404).send('<html><body>Error: Shortened URL does not exist. See current <a href="/urls">list of shortened URLS</a> or <a href="/urls/new">add a new URL</a>.</body></html>');
   } else if (user.id !== urlDatabase[shortURL]["userID"]) {
     res.status(403).send("<html><body>Error: You are not authorized to edit this URL.</body></html");
   } else {
@@ -83,11 +87,12 @@ app.get("/urls/:id", (req, res) => {
 // redirects shortURL :id to corresponding longURL if shortURL in database, else error message
 app.get("/u/:id", (req, res) => {
   let shortURL = req.params.id;
+
   if (shortURL in urlDatabase) {
     let longURL = urlDatabase[shortURL]["longURL"];
     res.redirect(longURL);
   } else {
-    res.status(404).send('<html><body>Error: Shortened URL does not exist.</body></html>')
+    res.status(404).send('<html><body>Error: Shortened URL does not exist.</body></html>');
   }
 });
 
@@ -96,12 +101,13 @@ app.get("/u/:id", (req, res) => {
 // generates new shortURL from inputted longURL and redirects to /urls/shortURL if user logged in, else error message
 app.post("/urls", (req, res) => {
   let user = req.session.user_id;
+
   if (typeof user === "undefined") {
     res.status(403).send("<html><body>Error: Please register or login.</body></html>");
   } else {
     let shortURL = func.generateRandomString();
     urlDatabase[shortURL] = {longURL: "http://" + req.body.longURL, userID: user.id};
-    let url = "/urls/" + shortURL
+    let url = "/urls/" + shortURL;
     res.redirect(url);
   }
 });
@@ -113,10 +119,11 @@ app.post("/urls/:id/", (req, res) => {
   let user = req.session.user_id;
   let shortURL = req.params.id;
   let longURL = req.body.longURL;
+
   if (typeof user === "undefined") {
     res.status(403).send("<html><body>Error: Please register or login.</body></html>");
   } else if (!(shortURL in urlDatabase)) {
-    res.status(404).send('<html><body>Error: Shortened URL does not exist.</body></html>')
+    res.status(404).send('<html><body>Error: Shortened URL does not exist.</body></html>');
   } else if (user.id !== urlDatabase[shortURL]["userID"]) {
     res.status(403).send("<html><body>Error: You are not authorized to edit this URL.</body></html");
   } else {
@@ -131,10 +138,11 @@ app.post("/urls/:id/", (req, res) => {
 app.post("/urls/:id/delete", (req, res) => {
   let user = req.session.user_id;
   let shortURL = req.params.id;
+
   if (typeof user === "undefined") {
     res.status(403).send("<html><body>Error: Please register or login.</body></html>");
   } else if (!(shortURL in urlDatabase)) {
-    res.status(404).send('<html><body>Error: Shortened URL does not exist.</body></html>')
+    res.status(404).send('<html><body>Error: Shortened URL does not exist.</body></html>');
   } else if (user.id !== urlDatabase[shortURL]["userID"]) {
     res.status(403).send("<html><body>Error: You are not authorized to delete this URL.</body></html");
   } else {
@@ -147,25 +155,27 @@ app.post("/urls/:id/delete", (req, res) => {
 // renders login page if user not logged in, else redirect to /urls
 app.get("/login", (req, res) => {
   let user = req.session.user_id;
+
   if (typeof user === "undefined") {
     let templateVars = {action: "/login", button: "Login"};
     res.render("login", templateVars);
   } else {
     res.redirect("/urls");
   }
-})
+});
 
 // GET /register
 // renders register page if user not logged in, else redirect to /urls
 app.get("/register", (req, res) => {
   let user = req.session.user_id;
+
   if (typeof user === "undefined") {
     let templateVars = {action: "/register", button: "Register"};
     res.render("register", templateVars);
   } else {
     res.redirect("/urls");
   }
-})
+});
 
 // POST /login
 // (form is generated from GET /login)
@@ -176,12 +186,12 @@ app.post("/login", (req, res) => {
   let id = func.getIDfromEmail(email);
 
   if (!id) {
-    res.status(403).send("<html><body><p>Error: The email entered has not been registered.</p><p><a href='/register'>Register</a> &nbsp;|&nbsp; <a href='/login'>Login</a></p></body></html>")
+    res.status(403).send("<html><body><p>Error: The email entered has not been registered.</p><p><a href='/register'>Register</a> &nbsp;|&nbsp; <a href='/login'>Login</a></p></body></html>");
   } else if (bcrypt.compareSync(password, users[id]["password"])) {
     req.session.user_id = users[id];
     res.redirect("/urls");
   } else {
-    res.status(403).send("<html><body><p>Error: Incorrect password.</p><p><a href='/login'>Login</a></p></body></html>")
+    res.status(403).send("<html><body><p>Error: Incorrect password.</p><p><a href='/login'>Login</a></p></body></html>");
   }
 });
 
@@ -195,9 +205,9 @@ app.post("/register", (req, res) => {
   let hashedPassword = bcrypt.hashSync(password, 10);
 
   if (email === "" || password === "") {
-    res.status(400).send("<html><body><p>Error: The email and password fields cannot be empty.</p><p><a href='/register'>Register</a></p></body></html>")
+    res.status(400).send("<html><body><p>Error: The email and password fields cannot be empty.</p><p><a href='/register'>Register</a></p></body></html>");
   } else if (func.getIDfromEmail(email)) {
-    res.status(400).send("<html><body><p>Error: The email entered is already registered.</p><p><a href='/register'>Register</a> &nbsp;|&nbsp; <a href='/login'>Login</a></p></body></html>")
+    res.status(400).send("<html><body><p>Error: The email entered is already registered.</p><p><a href='/register'>Register</a> &nbsp;|&nbsp; <a href='/login'>Login</a></p></body></html>");
   } else {
     users[id] = {id: id, email: email, password: hashedPassword};
     console.log(users);
@@ -218,8 +228,9 @@ app.post("/logout", (req, res) => {
 // renders list of urls for user as a json if user logged in, else error message
 app.get("/urls.json", (req, res) => {
   let user = req.session.user_id;
+
   if (typeof user === "undefined") {
-    res.status(403).send("<html><body><p>Error: Please register or login to access your list of shortened URLs.</p><p><a href='/register'>Register</a> &nbsp;|&nbsp; <a href='/login'>Login</a></p></body></html>")
+    res.status(403).send("<html><body><p>Error: Please register or login to access your list of shortened URLs.</p><p><a href='/register'>Register</a> &nbsp;|&nbsp; <a href='/login'>Login</a></p></body></html>");
   } else {
     let filteredDatabase = func.urlsForUser(user.id);
     res.json(filteredDatabase);

@@ -12,10 +12,10 @@
       <th>Original URL</th>
       <th>Shortened URL</th>
     </tr>
-    <% for (var url in urls) { %>
+    <% for (let url in urls) { %>
     <tr>
-      <td> <%= urls[url]["longURL"] %> </td>
-      <td> http://localhost:8080/<%= url %> </td>
+      <td> <a href=<%= urls[url]["longURL"] %> ><%= urls[url]["longURL"] %> </a></td>
+      <td> <a href=http://localhost:8080/u/<%= url %> >http://localhost:8080/u/<%= url %> </a></td>
       <td>
         <a href= <%= "/urls/" + url %> >Edit</a>
       </td>

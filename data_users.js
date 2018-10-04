@@ -3,8 +3,10 @@ const app = express();
 
 const bcrypt = require("bcrypt");
 
-const connorpass = bcrypt.hashSync("omglol",10)
-const taypass = bcrypt.hashSync("iheartcats",10)
+const connorpass = bcrypt.hashSync("omglol",10);
+const taypass = bcrypt.hashSync("iheartcats",10);
+const randpass = bcrypt.hashSync("purple-monkey-dinosaur",10);
+const rand2pass = bcrypt.hashSync("dishwasher-funk",10);
 
 module.exports = {
   "userRandomID": {
