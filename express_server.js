@@ -1,3 +1,4 @@
+// requirements
 const express = require("express");
 const app = express();
 app.set("view engine", "ejs");
@@ -13,46 +14,12 @@ app.use(cookieSession({
 
 const bcrypt = require("bcrypt");
 
-let PORT = 8080; // default port 8080
+// default port 8080
+let PORT = 8080;
 
-// const urlDatabase = require("./data_urls");
-// const users = require("./users");
-
-let connorpass = bcrypt.hashSync("omglol",10)
-
-const urlDatabase = {
-  "b2xVn2": {
-    longURL: "http://www.lighthouselabs.ca",
-    userID: "connorlol"
-  },
-  "9sm5xK": {
-    longURL: "http://www.google.com",
-    userID: "connorlol"
-  }
-};
-
-const users = {
-  "userRandomID": {
-    id: "userRandomID",
-    email: "user@example.com",
-    password: "purple-monkey-dinosaur"
-  },
- "user2RandomID": {
-    id: "user2RandomID",
-    email: "user2@example.com",
-    password: "dishwasher-funk"
-  },
-  "connorlol": {
-    id: "connorlol",
-    email: "connor@example.com",
-    password: connorpass
-  },
-  "tswift13": {
-    id: "tswift13",
-    email: "tswizzle@example.com",
-    password: "iheartcats"
-  }
-}
+// import url and user data from modules
+const urlDatabase = require("./data_urls");
+const users = require("./data_users");
 
 // GET /
 // redirects to /login if user is not logged in, else /urls
@@ -153,16 +120,69 @@ app.post("/urls/:id/", (req, res) => {
   }
 });
 
-app.get("/register", (req, res) => {
+// POST /urls/:id/delete
+// (form is generated from GET /urls)
+// deletes shortURL :id from database, if user is logged in, :id exists, and :id belongs to user, else error message
+app.post("/urls/:id/delete", (req, res) => {
   let user = req.session.user_id;
-  if (typeof user !== "undefined") {
-    res.redirect("/urls");
+  let shortURL = req.params.id;
+  if (typeof user === "undefined") {
+    res.status(403).send("<html><body>Error: Please register or login.</body></html>");
+  } else if (!(shortURL in urlDatabase)) {
+    res.status(404).send('<html><body>Error: Shortened URL does not exist.</body></html>')
+  } else if (user.id !== urlDatabase[shortURL]["userID"]) {
+    res.status(403).send("<html><body>Error: You are not authorized to delete this URL.</body></html");
   } else {
-    let templateVars = {action: "/register", button: "Register"};
-    res.render("register", templateVars);
+    delete urlDatabase[shortURL];
+    res.redirect("/urls");
+  }
+});
+
+// GET /login
+// renders login page if user not logged in, else redirect to /urls
+app.get("/login", (req, res) => {
+  let user = req.session.user_id;
+  if (typeof user === "undefined") {
+    let templateVars = {action: "/login", button: "Login"};
+    res.render("login", templateVars);
+  } else {
+    res.redirect("/urls");
   }
 })
 
+// GET /register
+// renders register page if user not logged in, else redirect to /urls
+app.get("/register", (req, res) => {
+  let user = req.session.user_id;
+  if (typeof user === "undefined") {
+    let templateVars = {action: "/register", button: "Register"};
+    res.render("register", templateVars);
+  } else {
+    res.redirect("/urls");
+  }
+})
+
+// POST /login
+// (form is generated from GET /login)
+// sets cookie and redirects to /urls if email and password match database, else error message
+app.post("/login", (req, res) => {
+  let email = req.body.email;
+  let password = req.body.password;
+  let id = getIDfromEmail(email);
+
+  if (!id) {
+    res.status(403).send("<html><body><p>Error: The email entered has not been registered.</p><p><a href='/register'>Register</a> &nbsp;|&nbsp; <a href='/login'>Login</a></p></body></html>")
+  } else if (bcrypt.compareSync(password, users[id]["password"])) {
+    req.session.user_id = users[id];
+    res.redirect("/urls");
+  } else {
+    res.status(403).send("<html><body><p>Error: Incorrect password.</p><p><a href='/login'>Login</a></p></body></html>")
+  }
+});
+
+// POST /register
+// (form is generated from GET /register)
+// adds new user to users database, sets cookie, and redirects to /urls if email and password fields not blank and email not already registered, else error message
 app.post("/register", (req, res) => {
   let id = generateRandomString();
   let email = req.body.email;
@@ -181,26 +201,9 @@ app.post("/register", (req, res) => {
   }
 });
 
-app.get("/login", (req, res) => {
-  let templateVars = {action: "/login", button: "Login"};
-  res.render("login", templateVars);
-})
-
-app.post("/login", (req, res) => {
-  let email = req.body.email;
-  let password = req.body.password;
-  let id = getIDfromEmail(email);
-
-  if (!id) {
-    res.status(403).send("<html><body><p>Error: The email entered has not been registered.</p><p><a href='/register'>Register</a> &nbsp;|&nbsp; <a href='/login'>Login</a></p></body></html>")
-  } else if (bcrypt.compareSync(password, users[id]["password"])) {
-    req.session.user_id = users[id];
-    res.redirect("/urls");
-  } else {
-    res.status(403).send("<html><body><p>Error: Incorrect password.</p><p><a href='/login'>Login</a></p></body></html>")
-  }
-});
-
+// POST /logout
+// (form is generated in header)
+// deletes cookies and redirects to /urls
 app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect("/urls");
@@ -212,18 +215,7 @@ app.post("/logout", (req, res) => {
 
 
 
-app.post("/urls/:id/delete", (req, res) => {
-  let user = req.session.user_id;
-  let shortURL = req.params.id;
-  if (user.id !== urlDatabase[shortURL]["userID"]) {
-    res.status(403).send("<html><body>Error: You are not authorized to delete this URL.</body></html");
-  } else if (shortURL in urlDatabase) {
-    delete urlDatabase[shortURL];
-    res.redirect("/urls");
-  } else {
-    res.status(404).send('<html><body>Error: Shortened URL does not exist. See current <a href="/urls">list of shortened URLS</a> or <a href="/urls/new">add a new URL</a>.</body></html>')
-  }
-});
+
 
 
 

@@ -1,4 +1,4 @@
-const urlDatabase = {
+module.exports = {
   "b2xVn2": {
     longURL: "http://www.lighthouselabs.ca",
     userID: "connorlol"
@@ -8,5 +8,3 @@ const urlDatabase = {
     userID: "connorlol"
   }
 };
-
-module.exports = urlDatabase;
