@@ -17,9 +17,14 @@ const bcrypt = require("bcrypt");
 // default port 8080
 let PORT = 8080;
 
-// import url and user data from modules
+app.listen(PORT, () => {
+  console.log(`Example app listening on port ${PORT}!`);
+});
+
+// import url and user data and required functions from modules
 const urlDatabase = require("./data_urls");
 const users = require("./data_users");
+const func = require("./functions")
 
 // GET /
 // redirects to /login if user is not logged in, else /urls
@@ -33,13 +38,13 @@ app.get("/", (req, res) => {
 });
 
 // GET /urls
-// renders list of urls if user logged in, else error message
+// renders list of urls for a user if user logged in, else error message
 app.get("/urls", (req, res) => {
   let user = req.session.user_id;
   if (typeof user === "undefined") {
     res.status(403).send("<html><body><p>Error: Please register or login to access your list of shortened URLs.</p><p><a href='/register'>Register</a> &nbsp;|&nbsp; <a href='/login'>Login</a></p></body></html>")
   } else {
-    let filteredDatabase = urlsForUser(user.id);
+    let filteredDatabase = func.urlsForUser(user.id);
     let templateVars = {urls: filteredDatabase, user: user};
     res.render("urls_index", templateVars);
   }
@@ -94,7 +99,7 @@ app.post("/urls", (req, res) => {
   if (typeof user === "undefined") {
     res.status(403).send("<html><body>Error: Please register or login.</body></html>");
   } else {
-    let shortURL = generateRandomString();
+    let shortURL = func.generateRandomString();
     urlDatabase[shortURL] = {longURL: "http://" + req.body.longURL, userID: user.id};
     let url = "/urls/" + shortURL
     res.redirect(url);
@@ -168,7 +173,7 @@ app.get("/register", (req, res) => {
 app.post("/login", (req, res) => {
   let email = req.body.email;
   let password = req.body.password;
-  let id = getIDfromEmail(email);
+  let id = func.getIDfromEmail(email);
 
   if (!id) {
     res.status(403).send("<html><body><p>Error: The email entered has not been registered.</p><p><a href='/register'>Register</a> &nbsp;|&nbsp; <a href='/login'>Login</a></p></body></html>")
@@ -184,14 +189,14 @@ app.post("/login", (req, res) => {
 // (form is generated from GET /register)
 // adds new user to users database, sets cookie, and redirects to /urls if email and password fields not blank and email not already registered, else error message
 app.post("/register", (req, res) => {
-  let id = generateRandomString();
+  let id = func.generateRandomString();
   let email = req.body.email;
   let password = req.body.password;
   let hashedPassword = bcrypt.hashSync(password, 10);
 
   if (email === "" || password === "") {
     res.status(400).send("<html><body><p>Error: The email and password fields cannot be empty.</p><p><a href='/register'>Register</a></p></body></html>")
-  } else if (getIDfromEmail(email)) {
+  } else if (func.getIDfromEmail(email)) {
     res.status(400).send("<html><body><p>Error: The email entered is already registered.</p><p><a href='/register'>Register</a> &nbsp;|&nbsp; <a href='/login'>Login</a></p></body></html>")
   } else {
     users[id] = {id: id, email: email, password: hashedPassword};
@@ -209,56 +214,14 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
+// GET /urls.json
+// renders list of urls for user as a json if user logged in, else error message
 app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
+  let user = req.session.user_id;
+  if (typeof user === "undefined") {
+    res.status(403).send("<html><body><p>Error: Please register or login to access your list of shortened URLs.</p><p><a href='/register'>Register</a> &nbsp;|&nbsp; <a href='/login'>Login</a></p></body></html>")
+  } else {
+    let filteredDatabase = func.urlsForUser(user.id);
+    res.json(filteredDatabase);
+  }
 });
-
-
-
-app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
-});
-
-function generateRandomString() {
-  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-  let output = "";
-
-  for (let i = 0; i < 6; i++) {
-    let randNum = Math.floor(Math.random() * 36);
-    let char = chars.substring(randNum, randNum + 1);
-    output += char;
-  }
-
-  return output;
-}
-
-function getIDfromEmail(email) {
-  for (var user in users) {
-    if (users[user]["email"] === email) {
-      return user;
-    }
-  }
-  return false;
-}
-
-function urlsForUser(id) {
-  var filteredDatabase = {};
-  for (var url in urlDatabase) {
-    if (urlDatabase[url]["userID"] === id) {
-      filteredDatabase[url] = urlDatabase[url];
-    }
-  }
-  return filteredDatabase;
-}
