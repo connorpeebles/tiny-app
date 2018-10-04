@@ -7,7 +7,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 const cookieSession = require("cookie-session");
 app.use(cookieSession({
-  name: "session";
+  name: "session",
   secret: "this better work"
 }));
 
@@ -57,7 +57,7 @@ const users = {
 // GET /
 // redirects to /login if user is not logged in, else /urls
 app.get("/", (req, res) => {
-  let user = req.cookies["user_id"];
+  let user = req.session.user_id;
   if (typeof user === "undefined") {
     res.redirect("/login");
   } else {
@@ -68,12 +68,12 @@ app.get("/", (req, res) => {
 // GET /urls
 // renders list of urls if user logged in, else error message
 app.get("/urls", (req, res) => {
-  let user = req.cookies["user_id"];
+  let user = req.session.user_id;
   if (typeof user === "undefined") {
     res.status(403).send("<html><body><p>Error: Please register or login to access your list of shortened URLs.</p><p><a href='/register'>Register</a> &nbsp;|&nbsp; <a href='/login'>Login</a></p></body></html>")
   } else {
     let filteredDatabase = urlsForUser(user.id);
-    let templateVars = {urls: filteredDatabase, user: req.cookies["user_id"]};
+    let templateVars = {urls: filteredDatabase, user: user};
     res.render("urls_index", templateVars);
   }
 });
@@ -81,11 +81,11 @@ app.get("/urls", (req, res) => {
 // GET /urls/new
 // renders form to add new short URL if user logged in, else redirects to login
 app.get("/urls/new", (req, res) => {
-  let user = req.cookies["user_id"];
+  let user = req.session.user_id;
   if (typeof user === "undefined") {
     res.redirect("/login");
   } else {
-    let templateVars = {user: req.cookies["user_id"]};
+    let templateVars = {user: user};
     res.render("urls_new", templateVars);
   }
 });
@@ -93,7 +93,7 @@ app.get("/urls/new", (req, res) => {
 // GET /urls/:id
 // renders form to edit short URL with :id if user is logged in, :id exists, and :id belongs to user, else error message
 app.get("/urls/:id", (req, res) => {
-  let user = req.cookies["user_id"];
+  let user = req.session.user_id;
   let shortURL = req.params.id;
   if (typeof user === "undefined") {
     res.status(403).send("<html><body><p>Error: Please register or login.</p><p><a href='/register'>Register</a> &nbsp;|&nbsp; <a href='/login'>Login</a></p></body></html>")
@@ -102,7 +102,7 @@ app.get("/urls/:id", (req, res) => {
   } else if (user.id !== urlDatabase[shortURL]["userID"]) {
     res.status(403).send("<html><body>Error: You are not authorized to edit this URL.</body></html");
   } else {
-    let templateVars = {shortURL: shortURL, longURL: urlDatabase[shortURL]["longURL"], user: req.cookies["user_id"]};
+    let templateVars = {shortURL: shortURL, longURL: urlDatabase[shortURL]["longURL"], user: user};
     res.render("urls_show", templateVars);
   }
 });
@@ -123,7 +123,7 @@ app.get("/u/:id", (req, res) => {
 // (form is generated from GET /urls/new)
 // generates new shortURL from inputted longURL and redirects to /urls/shortURL if user logged in, else error message
 app.post("/urls", (req, res) => {
-  let user = req.cookies["user_id"]
+  let user = req.session.user_id;
   if (typeof user === "undefined") {
     res.status(403).send("<html><body>Error: Please register or login.</body></html>");
   } else {
@@ -138,7 +138,7 @@ app.post("/urls", (req, res) => {
 // (form is generated from GET /urls/:id)
 // updates longURL associated with shortURL :id and redirects to /url, if user is logged in, :id exists, and :id belongs to user, else error message
 app.post("/urls/:id/", (req, res) => {
-  let user = req.cookies["user_id"]
+  let user = req.session.user_id;
   let shortURL = req.params.id;
   let longURL = req.body.longURL;
   if (typeof user === "undefined") {
@@ -154,7 +154,7 @@ app.post("/urls/:id/", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  let user = req.cookies["user_id"];
+  let user = req.session.user_id;
   if (typeof user !== "undefined") {
     res.redirect("/urls");
   } else {
@@ -176,7 +176,7 @@ app.post("/register", (req, res) => {
   } else {
     users[id] = {id: id, email: email, password: hashedPassword};
     console.log(users);
-    res.cookie("user_id", users[id]);
+    req.session.user_id = users[id];
     res.redirect("/urls");
   }
 });
@@ -194,7 +194,7 @@ app.post("/login", (req, res) => {
   if (!id) {
     res.status(403).send("<html><body><p>Error: The email entered has not been registered.</p><p><a href='/register'>Register</a> &nbsp;|&nbsp; <a href='/login'>Login</a></p></body></html>")
   } else if (bcrypt.compareSync(password, users[id]["password"])) {
-    res.session.user_id = users[id];
+    req.session.user_id = users[id];
     res.redirect("/urls");
   } else {
     res.status(403).send("<html><body><p>Error: Incorrect password.</p><p><a href='/login'>Login</a></p></body></html>")
@@ -202,7 +202,7 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
+  req.session = null;
   res.redirect("/urls");
 });
 
@@ -213,7 +213,7 @@ app.post("/logout", (req, res) => {
 
 
 app.post("/urls/:id/delete", (req, res) => {
-  let user = req.cookies["user_id"];
+  let user = req.session.user_id;
   let shortURL = req.params.id;
   if (user.id !== urlDatabase[shortURL]["userID"]) {
     res.status(403).send("<html><body>Error: You are not authorized to delete this URL.</body></html");
