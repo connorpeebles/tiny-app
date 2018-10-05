@@ -21,9 +21,9 @@ const bcrypt = require("bcrypt");
 // default port 8080
 const PORT = 8080;
 
-let totalVisits = 0;
-let uniqueVisits = 0;
-const visits = [];
+// let totalVisits = 0;
+// let uniqueVisits = 0;
+// const visits = [];
 
 app.listen(PORT, () => {
   console.log(`TinyApp listening on port ${PORT}!`); // eslint-disable-line no-console
@@ -86,7 +86,7 @@ app.get("/urls/:id", (req, res) => {
   } else if (user.id !== urlDatabase[shortURL]["userID"]) {
     res.status(403).send("<html><body>Error: You are not authorized to edit this URL.</body></html>");
   } else {
-    let templateVars = {shortURL: shortURL, longURL: urlDatabase[shortURL]["longURL"], user: user, totalVisits: totalVisits, uniqueVisits: uniqueVisits, visits: visits};
+    let templateVars = {shortURL: shortURL, longURL: urlDatabase[shortURL]["longURL"], user: user, totalVisits: urlDatabase[shortURL]["totalVisits"], uniqueVisits: urlDatabase[shortURL]["uniqueVisits"], visits: urlDatabase[shortURL]["visitors"]};
     res.render("urls_show", templateVars);
   }
 });
@@ -100,14 +100,18 @@ app.get("/u/:id", (req, res) => {
   let time = timeStamp.toTimeString().substring(0,8);
 
   if (shortURL in urlDatabase) {
-    totalVisits += 1;
+    urlDatabase[shortURL]["totalVisits"]++;
 
     if (!req.session.visitor) {
-      uniqueVisits += 1;
-      req.session.visitor = func.generateRandomString();
+      req.session.visitor = {id: func.generateRandomString(), sites: []};
     }
 
-    visits.push([req.session.visitor, date, time]);
+    if (!(req.session.visitor.sites.includes(shortURL))) {
+      urlDatabase[shortURL]["uniqueVisits"]++;
+      req.session.visitor.sites.push(shortURL);
+    }
+
+    urlDatabase[shortURL]["visitors"].push([req.session.visitor.id, date, time]);
     let longURL = urlDatabase[shortURL]["longURL"];
     res.redirect(longURL);
   } else {
@@ -125,7 +129,7 @@ app.post("/urls", (req, res) => {
     res.status(403).send("<html><body>Error: Please register or login.</body></html>");
   } else {
     let shortURL = func.generateRandomString();
-    urlDatabase[shortURL] = {longURL: "http://" + req.body.longURL, userID: user.id};
+    urlDatabase[shortURL] = {longURL: "http://" + req.body.longURL, userID: user.id, totalVisits: 0, uniqueVisits: 0, visitors: []};
     let url = "/urls/" + shortURL;
     res.redirect(url);
   }
