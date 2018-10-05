@@ -92,7 +92,7 @@ app.get("/urls/:id", (req, res) => {
 });
 
 // GET /u/:id
-// redirects shortURL :id to corresponding longURL if shortURL in database, else error message
+// redirects shortURL :id to corresponding longURL if shortURL in database & sets visitor ID if first time visitor, else error message
 app.get("/u/:id", (req, res) => {
   let shortURL = req.params.id;
   let timeStamp = new Date();
@@ -107,9 +107,7 @@ app.get("/u/:id", (req, res) => {
       req.session.visitor = func.generateRandomString();
     }
 
-    console.log(uniqueVisits);
     visits.push([req.session.visitor, date, time]);
-
     let longURL = urlDatabase[shortURL]["longURL"];
     res.redirect(longURL);
   } else {
