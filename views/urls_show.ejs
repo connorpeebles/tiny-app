@@ -26,7 +26,23 @@
     <input id="longURL" type="text" name="longURL" placeholder="www.example.com" style="width: 300px">
     <input type="submit" value="Update">
   </form>
-  <p style="margin:50px;"><a href="/urls">View all short URLs</a></p>
+  <p style="margin:50px;"><a href="/urls">View all short URLs</a></p><br>
+  <hr width="675px" align="left" style="margin-left:25px">
+  <p style="margin-left:55px;"><i>Analytics:</i><p>
+  <table cellpadding="5" style="margin-left:50px;">
+    <tr>
+      <th>Visitor ID</th>
+      <th>Date of Visit</th>
+      <th>Time of Visit</th>
+    </tr>
+    <% for (let visit of visits) { %>
+    <tr>
+      <td><center> <%= visit[0] %> </center></td>
+      <td><center> <%= visit[1] %> </center></td>
+      <td><center> <%= visit[2] %> </center></td>
+    </tr>
+    <% }; %>
+  </table>
 </body>
 
 </html>

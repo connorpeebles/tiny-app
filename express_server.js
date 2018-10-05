@@ -23,6 +23,7 @@ const PORT = 8080;
 
 let totalVisits = 0;
 let uniqueVisits = 0;
+const visits = [];
 
 app.listen(PORT, () => {
   console.log(`TinyApp listening on port ${PORT}!`); // eslint-disable-line no-console
@@ -85,7 +86,7 @@ app.get("/urls/:id", (req, res) => {
   } else if (user.id !== urlDatabase[shortURL]["userID"]) {
     res.status(403).send("<html><body>Error: You are not authorized to edit this URL.</body></html>");
   } else {
-    let templateVars = {shortURL: shortURL, longURL: urlDatabase[shortURL]["longURL"], user: user, totalVisits: totalVisits, uniqueVisits: uniqueVisits};
+    let templateVars = {shortURL: shortURL, longURL: urlDatabase[shortURL]["longURL"], user: user, totalVisits: totalVisits, uniqueVisits: uniqueVisits, visits: visits};
     res.render("urls_show", templateVars);
   }
 });
@@ -94,14 +95,20 @@ app.get("/urls/:id", (req, res) => {
 // redirects shortURL :id to corresponding longURL if shortURL in database, else error message
 app.get("/u/:id", (req, res) => {
   let shortURL = req.params.id;
+  let timeStamp = new Date();
+  let date = timeStamp.toDateString();
+  let time = timeStamp.toTimeString().substring(0,8);
 
   if (shortURL in urlDatabase) {
     totalVisits += 1;
 
     if (!req.session.visitor) {
-      req.session.visitor = func.generateRandomString();
       uniqueVisits += 1;
+      req.session.visitor = func.generateRandomString();
     }
+
+    console.log(uniqueVisits);
+    visits.push([req.session.visitor, date, time]);
 
     let longURL = urlDatabase[shortURL]["longURL"];
     res.redirect(longURL);
