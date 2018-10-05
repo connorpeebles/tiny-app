@@ -21,7 +21,8 @@ const bcrypt = require("bcrypt");
 // default port 8080
 const PORT = 8080;
 
-let total_visits = 0;
+let totalVisits = 0;
+let uniqueVisits = 0;
 
 app.listen(PORT, () => {
   console.log(`TinyApp listening on port ${PORT}!`); // eslint-disable-line no-console
@@ -84,7 +85,7 @@ app.get("/urls/:id", (req, res) => {
   } else if (user.id !== urlDatabase[shortURL]["userID"]) {
     res.status(403).send("<html><body>Error: You are not authorized to edit this URL.</body></html>");
   } else {
-    let templateVars = {shortURL: shortURL, longURL: urlDatabase[shortURL]["longURL"], user: user, views: total_visits};
+    let templateVars = {shortURL: shortURL, longURL: urlDatabase[shortURL]["longURL"], user: user, totalVisits: totalVisits, uniqueVisits: uniqueVisits};
     res.render("urls_show", templateVars);
   }
 });
@@ -95,10 +96,12 @@ app.get("/u/:id", (req, res) => {
   let shortURL = req.params.id;
 
   if (shortURL in urlDatabase) {
-    total_visits += 1;
-    // if (!req.session.visitor) {
-    //   req.session.uniqueViews = (req.session.views || 0) + 1;
-    // }
+    totalVisits += 1;
+
+    if (!req.session.visitor) {
+      req.session.visitor = func.generateRandomString();
+      uniqueVisits += 1;
+    }
 
     let longURL = urlDatabase[shortURL]["longURL"];
     res.redirect(longURL);

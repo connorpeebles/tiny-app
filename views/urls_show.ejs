@@ -12,11 +12,13 @@
       <th>Original URL</th>
       <th>Shortened URL</th>
       <th>Total Visits</th>
+      <th>Unique Visitors</th>
     </tr>
     <tr>
       <td><a href=<%= longURL %> > <%= longURL %> </a></td>
       <td><a href="http://localhost:8080/u/<%= shortURL %>" > http://localhost:8080/u/<%= shortURL %> </a></td>
-      <td><center><%= views %></center></td>
+      <td><center><%= totalVisits %></center></td>
+      <td><center><%= uniqueVisits %></center></td>
     </tr>
   </table>
   <form action=<%= "/urls/" + shortURL + "?_method=PUT"%> method="POST" style="margin:50px;">
