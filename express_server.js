@@ -88,7 +88,7 @@ app.get("/urls/:id", (req, res) => {
 });
 
 // GET /u/:id
-// redirects shortURL :id to corresponding longURL if shortURL in database & sets visitor ID if first time visitor, else error message
+// redirects shortURL :id to corresponding longURL if shortURL in database, updates analytic info, & sets visitor ID if first time visitor, else error message
 app.get("/u/:id", (req, res) => {
   let shortURL = req.params.id;
   let timeStamp = new Date();
