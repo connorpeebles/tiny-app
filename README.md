@@ -7,8 +7,8 @@ TinyApp is a full stack web application built with Node and Express that allows 
 #### Screenshot of a user's short URL collection:
 !["Screenshot of a user's short URL collection"](https://github.com/connorpeebles/tiny-app/blob/master/docs/tinyapp_urls.png?raw=true)
 
-#### Screenshot of the add new URL page:
-!["Screenshot of the add new URL page"](https://github.com/connorpeebles/tiny-app/blob/master/docs/tinyapp_new.png?raw=true)
+#### Screenshot of the edit & analytics page:
+!["Screenshot of the edit & analytics page"](https://github.com/connorpeebles/tiny-app/blob/feature/analytics/docs/tinyapp_edit.png?raw=true)
 
 #### Screenshot of the login page:
 !["Screenshot of the login page"](https://github.com/connorpeebles/tiny-app/blob/master/docs/tinyapp_login.png?raw=true)
@@ -19,6 +19,7 @@ TinyApp is a full stack web application built with Node and Express that allows 
 - View your personal collection of shortened URLs.
 - Edit the website for a specific shortened URL.
 - Delete shortened URLs from your personal collection.
+- Track short URL analytics, including number of total visits, number of unique visitors, and visitor ID, date, and time of each unique visit
 - Register and login with email and password for access.
 
 ## Dependencies
