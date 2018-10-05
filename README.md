@@ -19,7 +19,7 @@ TinyApp is a full stack web application built with Node and Express that allows 
 - View your personal collection of shortened URLs.
 - Edit the website for a specific shortened URL.
 - Delete shortened URLs from your personal collection.
-- Track short URL analytics, including number of total visits, number of unique visitors, and visitor ID, date, and time of each unique visit
+- Track short URL analytics, including number of total visits, number of unique visitors, and visitor ID, date, and time for each unique visit.
 - Register and login with email and password for access.
 
 ## Dependencies
