@@ -119,7 +119,7 @@ app.post("/urls", (req, res) => {
 // PUT /urls/:id
 // (form is generated from GET /urls/:id)
 // updates longURL associated with shortURL :id and redirects to /url, if user is logged in, :id exists, and :id belongs to user, else error message
-app.post("/urls/:id/", (req, res) => {
+app.put("/urls/:id/", (req, res) => {
   let user = req.session.user_id;
   let shortURL = req.params.id;
   let longURL = req.body.longURL;
@@ -136,10 +136,10 @@ app.post("/urls/:id/", (req, res) => {
   }
 });
 
-// POST /urls/:id/delete
+// DELETE /urls/:id/
 // (form is generated from GET /urls)
 // deletes shortURL :id from database, if user is logged in, :id exists, and :id belongs to user, else error message
-app.post("/urls/:id/delete", (req, res) => {
+app.delete("/urls/:id/", (req, res) => {
   let user = req.session.user_id;
   let shortURL = req.params.id;
 
