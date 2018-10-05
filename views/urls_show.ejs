@@ -6,15 +6,17 @@
 </head>
 
 <body>
-  <% include partials/_header %>
+  <% include partials/_header %></body>
   <table cellpadding="5" style="margin:50px;">
     <tr>
       <th>Original URL</th>
       <th>Shortened URL</th>
+      <th>Total Visits</th>
     </tr>
     <tr>
       <td><a href=<%= longURL %> > <%= longURL %> </a></td>
       <td><a href="http://localhost:8080/u/<%= shortURL %>" > http://localhost:8080/u/<%= shortURL %> </a></td>
+      <td><center><%= views %></center></td>
     </tr>
   </table>
   <form action=<%= "/urls/" + shortURL + "?_method=PUT"%> method="POST" style="margin:50px;">
