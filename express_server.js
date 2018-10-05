@@ -1,6 +1,10 @@
 // requirements
 const express = require("express");
 const app = express();
+
+const methodOverride = require("method-override");
+app.use(methodOverride("_method"));
+
 app.set("view engine", "ejs");
 
 const bodyParser = require("body-parser");
@@ -112,7 +116,7 @@ app.post("/urls", (req, res) => {
   }
 });
 
-// POST /urls/:id
+// PUT /urls/:id
 // (form is generated from GET /urls/:id)
 // updates longURL associated with shortURL :id and redirects to /url, if user is logged in, :id exists, and :id belongs to user, else error message
 app.post("/urls/:id/", (req, res) => {
