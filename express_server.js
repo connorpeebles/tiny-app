@@ -21,10 +21,6 @@ const bcrypt = require("bcrypt");
 // default port 8080
 const PORT = 8080;
 
-// let totalVisits = 0;
-// let uniqueVisits = 0;
-// const visits = [];
-
 app.listen(PORT, () => {
   console.log(`TinyApp listening on port ${PORT}!`); // eslint-disable-line no-console
 });
